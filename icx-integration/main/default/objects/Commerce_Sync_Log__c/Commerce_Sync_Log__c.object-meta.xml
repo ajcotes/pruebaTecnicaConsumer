@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Commerce Sync Log</label>
+    <pluralLabel>Commerce Sync Logs</pluralLabel>
+    <nameField><label>Log</label><type>AutoNumber</type><displayFormat>SYNC-{000000}</displayFormat></nameField>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <sharingModel>ReadWrite</sharingModel>
+    <enableActivities>false</enableActivities>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <description>Trazabilidad de cada ejecución del job CRM → B2C Commerce: una fila por producto y una fila SUMMARY por ejecución.</description>
+</CustomObject>

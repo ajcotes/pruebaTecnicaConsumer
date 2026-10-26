@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>ICX Commerce Sync</label>
+    <description>Acceso al principal de la External Credential SFCC_Account_Manager, al objeto de log y a las clases del job CRM → B2C Commerce.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <externalCredentialPrincipalAccesses>
+        <enabled>true</enabled>
+        <externalCredentialPrincipal>SFCC_Account_Manager-ICX_Integration</externalCredentialPrincipal>
+    </externalCredentialPrincipalAccesses>
+    <objectPermissions>
+        <allowCreate>true</allowCreate><allowDelete>true</allowDelete><allowEdit>true</allowEdit><allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords><viewAllRecords>true</viewAllRecords>
+        <object>Commerce_Sync_Log__c</object>
+    </objectPermissions>
+    <fieldPermissions><editable>true</editable><field>Commerce_Sync_Log__c.Run_Id__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Commerce_Sync_Log__c.Product_Code__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Commerce_Sync_Log__c.Product_Name__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Commerce_Sync_Log__c.Unit_Price__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Commerce_Sync_Log__c.Currency_Code__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Commerce_Sync_Log__c.Status__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Commerce_Sync_Log__c.Operation__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Commerce_Sync_Log__c.HTTP_Status__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Commerce_Sync_Log__c.Correlation_Id__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Commerce_Sync_Log__c.Message__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Commerce_Sync_Log__c.Success_Count__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Commerce_Sync_Log__c.Error_Count__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Commerce_Sync_Log__c.Pricebook_Entry_Id__c</field><readable>true</readable></fieldPermissions>
+    <tabSettings><tab>Commerce_Sync_Log__c</tab><visibility>Visible</visibility></tabSettings>
+    <classAccesses><apexClass>ICX_CommerceApiClient</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>ICX_CommerceSyncSettings</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>ICX_PriceSyncBatch</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>ICX_PriceSyncScheduler</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>ICX_PriceSyncInvocable</apexClass><enabled>true</enabled></classAccesses>
+</PermissionSet>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Default</label>
+    <protected>false</protected>
+    <values><field>Active__c</field><value xsi:type="xsd:boolean">true</value></values>
+    <values><field>Batch_Size__c</field><value xsi:type="xsd:double">20.0</value></values>
+    <values><field>CRM_Pricebook_Name__c</field><value xsi:type="xsd:string">Lista de precios ICX</value></values>
+    <values><field>Catalog_Id__c</field><value xsi:type="xsd:string">icx-master-catalog</value></values>
+    <values><field>Currency_Code__c</field><value xsi:type="xsd:string">COP</value></values>
+    <values><field>Max_Retries__c</field><value xsi:type="xsd:double">2.0</value></values>
+    <values><field>Named_Credential__c</field><value xsi:type="xsd:string">SFCC_Admin_API</value></values>
+    <values><field>Organization_Id__c</field><value xsi:type="xsd:string">f_ecom_blsb_001</value></values>
+    <values><field>Price_Book_Id__c</field><value xsi:type="xsd:string">icx-cop-list-prices</value></values>
+    <values><field>Site_Id__c</field><xsi:nil="true"/></values>
+</CustomMetadata>
