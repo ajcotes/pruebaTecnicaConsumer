@@ -48,3 +48,6 @@ $RECYCLE.BIN/
 **/venv/
 credenciales-commerce-NO-SUBIR.txt
 docs/capturas-account-manager/
+
+# Metadata traída de la org de Italcol; no es parte del desarrollo de la prueba
+force-app/
