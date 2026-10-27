@@ -136,6 +136,47 @@ public with sharing class ICX_CommerceApiClient {
     }
 
     /**
+     * @description Marca un producto existente como online y buscable para el sitio configurado (PATCH de
+     *              onlineFlag y searchable). Se usa cuando el producto ya existía en Commerce pero no tenía
+     *              los flags del sitio, por ejemplo tras cambiar el sitio de destino en la configuración.
+     * @author Anibal Cortes | 10-26-2026
+     * @param productId ID del producto en Commerce.
+     * @return ApiResponse 200 si lo actualizó.
+     **/
+    public ApiResponse ensureSiteVisibility(String productId) {
+        Map<String, Object> body = new Map<String, Object>{
+            'onlineFlag' => new Map<String, Object>{ cfg.siteId => true },
+            'searchable' => new Map<String, Object>{ cfg.siteId => true }
+        };
+        return send('PATCH', cfg.productsPath() + '/' + enc(productId), JSON.serialize(body));
+    }
+
+    /**
+     * @description Indica si el documento de producto devuelto por getProduct ya está online y buscable para
+     *              el sitio configurado. SCAPI devuelve los mapas por sitio con claves "default@{siteId}".
+     * @author Anibal Cortes | 10-26-2026
+     * @param res Respuesta del GET de producto.
+     * @param siteId ID del sitio.
+     * @return Boolean true si ambos flags están en true para el sitio; false si falta alguno o no hay sitio.
+     **/
+    public static Boolean isVisibleForSite(ApiResponse res, String siteId) {
+        if (String.isBlank(siteId)) return true;
+        try {
+            Map<String, Object> m = res.bodyAsMap();
+            return flagForSite(m.get('onlineFlag'), siteId) && flagForSite(m.get('searchable'), siteId);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static Boolean flagForSite(Object flags, String siteId) {
+        if (!(flags instanceof Map<String, Object>)) return false;
+        Map<String, Object> f = (Map<String, Object>) flags;
+        Object v = f.containsKey('default@' + siteId) ? f.get('default@' + siteId) : f.get(siteId);
+        return v == true;
+    }
+
+    /**
      * @description Lee name.default del documento de producto devuelto por getProduct.
      * @author Anibal Cortes | 10-26-2026
      * @param res Respuesta del GET de producto.

@@ -169,7 +169,7 @@ Filtro de lectura: `Pricebook2.Name = <lista configurada>`, `IsActive = true`, `
 
 | Dependencia / riesgo | Impacto | Mitigación |
 |---|---|---|
-| Storefront (SFRA) no desplegado en `blsb-001` | CA4 no se puede mostrar en la tienda | Solicitado a Imagine CX; alternativa: validar CA4 en Business Manager |
+| Storefront (SFRA) no desplegado en `blsb-001` | CA4 no se puede mostrar en la tienda | Resuelto: la importación de la demo SFRA desde Business Manager instala el código. Como SFRA fuerza la moneda por idioma, se creó el sitio `ICX` con moneda COP para mostrar los precios en pesos |
 | Lista ICX con 2 productos (uno inactivo) en lugar de 4 | Demo de CA1 con menos productos | Agregar productos propios activos; el inactivo se excluye por diseño |
 | Flujo client credentials de la External Credential con Account Manager | Si no negocia el token, el job no autentica | Plan B: pedir el token desde Apex con Named Credential de usuario/contraseña |
 | Sesión de Business Manager caduca rápido | Interrupciones al configurar | Trabajar por bloques cortos |

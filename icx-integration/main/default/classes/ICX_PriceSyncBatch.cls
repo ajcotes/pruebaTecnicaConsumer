@@ -2,7 +2,8 @@
  * @description Job de sincronización CRM → B2C Commerce. Por cada PricebookEntry activa de la
  *              "Lista de precios ICX" cuyo producto esté activo y tenga código:
  *                1. GET del producto en Commerce por ProductCode.
- *                2. 404 → PUT para crearlo en el catálogo maestro. 200 → PATCH del nombre solo si cambió.
+ *                2. 404 → PUT para crearlo en el catálogo maestro. 200 → PATCH del nombre solo si cambió y
+ *                   PATCH de visibilidad (online/searchable) si el producto no la tenía para el sitio configurado.
  *                   Nunca duplica: el ProductCode es la llave en ambos sistemas.
  *                3. PUT upsert del precio en el price book. Es idempotente: correr N veces deja el mismo resultado.
  *              Cada producto deja una fila en Commerce_Sync_Log__c; un fallo en uno no detiene a los demás.
@@ -165,6 +166,14 @@ public with sharing class ICX_PriceSyncBatch implements Database.Batchable<SObje
                     ops.add('nombre actualizado');
                 } else {
                     ops.add('producto existente');
+                }
+                // 2c. Garantizar que esté online y buscable para el sitio configurado
+                if (cfg.hasSite() && !ICX_CommerceApiClient.isVisibleForSite(getRes, cfg.siteId)) {
+                    ICX_CommerceApiClient.ApiResponse visRes = client.ensureSiteVisibility(productCode);
+                    if (!visRes.isSuccess()) {
+                        return fail(log, 'habilitar en sitio', visRes);
+                    }
+                    ops.add('visible en ' + cfg.siteId);
                 }
             } else {
                 return fail(log, 'consultar producto', getRes);

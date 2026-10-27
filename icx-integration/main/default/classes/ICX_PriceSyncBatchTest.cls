@@ -89,6 +89,18 @@ private class ICX_PriceSyncBatchTest {
     }
 
     @isTest
+    static void productoExistenteSinVisibilidadSeHabilitaEnElSitio() {
+        ICX_CommerceApiMock mock = new ICX_CommerceApiMock();
+        mock.existingProducts.put('ICX-001', 'Huevos AA x30');
+        mock.notVisibleForSite.add('ICX-001');
+        runJob(mock);
+        Map<String, Commerce_Sync_Log__c> logs = logsByCode();
+        System.assertEquals('producto existente + visible en RefArch + precio creado', logs.get('ICX-001').Operation__c);
+        System.assertEquals(1, mock.count('PATCH /product/products'), 'un PATCH de visibilidad');
+        System.assert(!mock.notVisibleForSite.contains('ICX-001'));
+    }
+
+    @isTest
     static void errorEnUnProductoNoDetieneAlResto() {
         ICX_CommerceApiMock mock = new ICX_CommerceApiMock();
         mock.failPriceFor.add('ICX-002');

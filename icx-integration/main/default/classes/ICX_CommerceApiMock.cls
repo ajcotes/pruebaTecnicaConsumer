@@ -11,6 +11,8 @@ public class ICX_CommerceApiMock implements HttpCalloutMock {
 
     /** Productos que "existen" en Commerce: id → nombre actual. */
     public Map<String, String> existingProducts = new Map<String, String>();
+    /** Productos existentes que ya están online y buscables para el sitio (por defecto, todos los existentes). */
+    public Set<String> notVisibleForSite = new Set<String>();
     /** Si el price book configurado existe (afecta a price-book-search). */
     public Boolean priceBookExists = true;
     /** Productos cuyo PUT de precio responde siempre 500. */
@@ -58,7 +60,8 @@ public class ICX_CommerceApiMock implements HttpCalloutMock {
             if (method == 'GET') {
                 if (throwOnGet) throw new System.CalloutException('Read timed out (simulado)');
                 if (!existingProducts.containsKey(pid)) return status(res, 404, problem('Product Not Found', 'No product with ID \'' + pid + '\' could be found.'));
-                return status(res, 200, '{"id":"' + pid + '","name":{"default":"' + existingProducts.get(pid) + '"},"online":true}');
+                Boolean vis = !notVisibleForSite.contains(pid);
+                return status(res, 200, '{"id":"' + pid + '","name":{"default":"' + existingProducts.get(pid) + '"},"online":true,"onlineFlag":{"default":false,"default@RefArch":' + vis + '},"searchable":{"default":false,"default@RefArch":' + vis + '}}');
             }
             if (method == 'PUT') {
                 Map<String, Object> body = (Map<String, Object>) JSON.deserializeUntyped(req.getBody());
@@ -67,7 +70,12 @@ public class ICX_CommerceApiMock implements HttpCalloutMock {
             }
             if (method == 'PATCH') {
                 Map<String, Object> body = (Map<String, Object>) JSON.deserializeUntyped(req.getBody());
-                existingProducts.put(pid, (String) ((Map<String, Object>) body.get('name')).get('default'));
+                if (body.containsKey('name')) {
+                    existingProducts.put(pid, (String) ((Map<String, Object>) body.get('name')).get('default'));
+                }
+                if (body.containsKey('onlineFlag')) {
+                    notVisibleForSite.remove(pid);
+                }
                 return status(res, 200, '{"id":"' + pid + '"}');
             }
         }
