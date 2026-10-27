@@ -11,5 +11,5 @@
     <values><field>Named_Credential__c</field><value xsi:type="xsd:string">SFCC_Admin_API</value></values>
     <values><field>Organization_Id__c</field><value xsi:type="xsd:string">f_ecom_blsb_001</value></values>
     <values><field>Price_Book_Id__c</field><value xsi:type="xsd:string">icx-cop-list-prices</value></values>
-    <values><field>Site_Id__c</field><xsi:nil="true"/></values>
+    <values><field>Site_Id__c</field><value xsi:type="xsd:string">RefArch</value></values>
 </CustomMetadata>
