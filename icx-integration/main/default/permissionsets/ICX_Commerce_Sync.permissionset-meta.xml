@@ -25,5 +25,10 @@
     <fieldPermissions><editable>true</editable><field>Commerce_Sync_Log__c.Success_Count__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>true</editable><field>Commerce_Sync_Log__c.Error_Count__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>true</editable><field>Commerce_Sync_Log__c.Pricebook_Entry_Id__c</field><readable>true</readable></fieldPermissions>
+    <classAccesses><apexClass>ICX_CommerceApiClient</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>ICX_CommerceSyncSettings</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>ICX_PriceSyncBatch</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>ICX_PriceSyncScheduler</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>ICX_PriceSyncInvocable</apexClass><enabled>true</enabled></classAccesses>
     <tabSettings><tab>Commerce_Sync_Log__c</tab><visibility>Visible</visibility></tabSettings>
 </PermissionSet>

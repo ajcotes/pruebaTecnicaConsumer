@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Lanza a demanda el job ICX_PriceSyncBatch que lleva los productos y precios de la Lista de precios ICX a B2C Commerce, y muestra el Id del job para seguirlo en el objeto Commerce Sync Log.</description>
+    <environments>Default</environments>
+    <interviewLabel>Sincronizar Lista ICX con Commerce {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>ICX · Sincronizar Lista de precios con Commerce</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value><stringValue>LightningFlowBuilder</stringValue></value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value><stringValue>AUTO_LAYOUT_CANVAS</stringValue></value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value><stringValue>LightningFlowBuilder</stringValue></value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <actionCalls>
+        <name>Lanzar_job</name>
+        <label>Lanzar job de sincronización</label>
+        <locationX>176</locationX>
+        <locationY>350</locationY>
+        <actionName>ICX_PriceSyncInvocable</actionName>
+        <actionType>apex</actionType>
+        <connector><targetReference>Resultado</targetReference></connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>inputs</name>
+            <value><stringValue>flow</stringValue></value>
+        </inputParameters>
+        <nameSegment>ICX_PriceSyncInvocable</nameSegment>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <screens>
+        <name>Confirmar</name>
+        <label>Sincronizar Lista de precios ICX con Commerce</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector><targetReference>Lanzar_job</targetReference></connector>
+        <fields>
+            <name>Texto_confirmacion</name>
+            <fieldText>&lt;p&gt;Se va a ejecutar el job que lee los productos activos de la &lt;b&gt;Lista de precios ICX&lt;/b&gt; y los crea o actualiza en B2C Commerce con su precio.&lt;/p&gt;&lt;p&gt;Correrlo varias veces no duplica productos. El resultado de cada producto queda en &lt;b&gt;Commerce Sync Log&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Pulsa &lt;b&gt;Siguiente&lt;/b&gt; para lanzarlo.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <nextOrFinishButtonLabel>Siguiente</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Resultado</name>
+        <label>Job lanzado</label>
+        <locationX>176</locationX>
+        <locationY>542</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Texto_resultado</name>
+            <fieldText>&lt;p&gt;{!Lanzar_job.message}&lt;/p&gt;&lt;p&gt;Id del job: &lt;b&gt;{!Lanzar_job.jobId}&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Revisa el avance en Setup › Apex Jobs y el detalle por producto en la pestaña &lt;b&gt;Commerce Sync Logs&lt;/b&gt;.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <nextOrFinishButtonLabel>Cerrar</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector><targetReference>Confirmar</targetReference></connector>
+    </start>
+    <status>Active</status>
+</Flow>
