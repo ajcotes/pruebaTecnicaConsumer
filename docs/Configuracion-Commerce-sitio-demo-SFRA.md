@@ -154,5 +154,23 @@ Decisión para la integración: el job creará los productos en un catálogo mae
 
 ![A17. Lista de catálogos con icx-master-catalog junto a los de la demo](capturas-configuracion/A17-catalogos-con-icx.png)
 
-**Conclusión de la Fase A:** el sandbox pasó de vacío a tener dos sitios online, cuatro catálogos, price books e inventario de demo y la tienda SFRA funcionando. El bloqueo del storefront quedó resuelto por nosotros, sin acceso al repositorio privado. La moneda COP quedó habilitada en el sitio RefArch y el catálogo maestro `icx-master-catalog` creado para el job. Valores para la Custom Metadata del CRM: sitio `RefArch`, catálogo `icx-master-catalog`, price book `icx-cop-list-prices`, moneda `COP`.
+### A.13 Price book en COP para la integración
+
+**Dónde:** Merchant Tools (sitio RefArch) › Products and Catalogs › Price Books.
+
+**Por qué a mano:** durante la Fase B se comprobó que el endpoint `PUT /price-books/{id}` de la API de Price Books responde "Site Not Found" en este sandbox incluso para price books existentes (ver documento de la Fase B, paso B.5). Por eso el price book se trata como configuración y se crea en Business Manager; el job lo verifica con `price-book-search` y escribe los precios con el endpoint de entradas, que sí funciona.
+
+**Qué se hizo:** con **New** se creó el price book con ID `icx-cop-list-prices`, nombre "ICX Lista de precios (COP)", moneda **Colombian Peso**, estado activado y sin price book padre ni periodo de vigencia. Luego, en la pestaña **Site Assignments**, se marcó el sitio **RefArch** y se aplicó.
+
+**Resultado:** el price book existe en COP, activado y asignado a RefArch. Verificado por API con `price-book-search`: `currencyCode COP`, `online true`, `siteAssignments [RefArch]`. Es el valor de `Price_Book_Id__c` de la Custom Metadata.
+
+![A18. Lista de price books de la demo antes de crear el de ICX](capturas-configuracion/A18-price-books-antes.png)
+
+![A19. Formulario New Price Book con ID, nombre, descripción, moneda Colombian Peso y activación](capturas-configuracion/A19-price-book-icx-formulario.png)
+
+![A20. Price book icx-cop-list-prices recién creado](capturas-configuracion/A20-price-book-icx-creado.png)
+
+![A21. Pestaña Site Assignments del price book con el sitio RefArch asignado](capturas-configuracion/A21-price-book-icx-asignado-refarch.png)
+
+**Conclusión de la Fase A:** el sandbox pasó de vacío a tener dos sitios online, cuatro catálogos, price books e inventario de demo y la tienda SFRA funcionando. El bloqueo del storefront quedó resuelto por nosotros, sin acceso al repositorio privado. La moneda COP quedó habilitada en el sitio RefArch, el catálogo maestro `icx-master-catalog` creado y el price book `icx-cop-list-prices` creado en COP y asignado al sitio. Valores para la Custom Metadata del CRM: sitio `RefArch`, catálogo `icx-master-catalog`, price book `icx-cop-list-prices`, moneda `COP`.
 

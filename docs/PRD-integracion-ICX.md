@@ -16,7 +16,7 @@ Construir un job en el CRM de Salesforce que lleve a B2C Commerce los productos 
 - Lectura de las entradas activas de la Lista de precios ICX (`PricebookEntry`) cuyo producto esté activo y tenga código.
 - Creación del producto en el catálogo maestro de Commerce si no existe; si existe, no se duplica y se actualiza el nombre solo si cambió.
 - Creación o actualización del precio del producto en un price book de Commerce (upsert).
-- Creación automática del price book de destino si no existe, y su asignación al sitio cuando haya sitio configurado.
+- Verificación al inicio de que el price book de destino exista (vía `price-book-search`); el price book se crea y asigna al sitio manualmente en Business Manager, porque el endpoint `PUT /price-books/{id}` responde "Site Not Found" en este sandbox (ver documento de la Fase B).
 - Ejecución manual (desde Flow, botón o Execute Anonymous) y programada (Scheduled Apex).
 - Registro de cada ejecución y de cada producto en un objeto de log, con manejo de errores por producto y reintentos ante fallas transitorias.
 - Clases de prueba con callouts simulados y cobertura mínima del 75 %.
@@ -69,7 +69,7 @@ Autenticación: External Credential SFCC_Account_Manager
 Flujo de una ejecución:
 
 1. Lanzar el job (Flow, botón, Execute Anonymous o Scheduler).
-2. `start`: cargar configuración, validar que el price book exista en Commerce (si no, crearlo y asignarlo al sitio), consultar las entradas activas de la lista ICX.
+2. `start`: cargar configuración, verificar con `price-book-search` que el price book exista en Commerce (si no, abortar con error en el log), consultar las entradas activas de la lista ICX.
 3. `execute`, por producto: `GET` producto por `ProductCode`. 404 → `PUT` crear en el catálogo maestro, online y searchable. 200 → `PATCH` nombre solo si cambió. Luego `PUT` upsert del precio.
 4. Registrar una fila de log por producto (éxito o error). Un error en un producto no detiene a los demás.
 5. `finish`: fila SUMMARY con conteo de exitosos y errores.
@@ -102,7 +102,7 @@ Filtro de lectura: `Pricebook2.Name = <lista configurada>`, `IsActive = true`, `
 | Clase | Responsabilidad |
 |---|---|
 | `ICX_CommerceSyncSettings` | Lee y valida la Custom Metadata; expone rutas base |
-| `ICX_CommerceApiClient` | Callouts a Products y Price Books; reintentos ante 429/5xx/timeout; parseo de errores RFC 7807; header `correlation-id` |
+| `ICX_CommerceApiClient` | Callouts a Products y Price Books (GET/PUT/PATCH producto, búsqueda de price book, PUT de entrada de precio); reintentos ante 429/5xx/timeout; parseo de errores RFC 7807; header `correlation-id` |
 | `ICX_PriceSyncBatch` | `Batchable` + `AllowsCallouts` + `Stateful`; lógica por producto; log; resumen |
 | `ICX_PriceSyncScheduler` | `Schedulable` para ejecución programada |
 | `ICX_PriceSyncInvocable` | `@InvocableMethod` para Flow y `@AuraEnabled` para botón/LWC |
@@ -111,7 +111,7 @@ Filtro de lectura: `Pricebook2.Name = <lista configurada>`, `IsActive = true`, `
 | Clase | Cubre |
 |---|---|
 | `ICX_CommerceApiMock` | `HttpCalloutMock` que enruta por método y URL: 404/200 en GET producto, 201/200 en PUT, 500 configurable, price book existente o no |
-| `ICX_PriceSyncBatchTest` | CA1 (crea productos y precios), CA2 (producto nuevo), CA3 (re-ejecución sin duplicar, PATCH solo si cambia el nombre), price book inexistente, error por producto sin detener el batch, reintento exitoso, exclusión de inactivos y sin código |
+| `ICX_PriceSyncBatchTest` | CA1 (crea productos y precios), CA2 (producto nuevo), CA3 (re-ejecución sin duplicar, PATCH solo si cambia el nombre), price book inexistente (aborta con log), error por producto sin detener el batch, reintento exitoso, exclusión de inactivos y sin código |
 | `ICX_CommerceApiClientTest` | Cuerpos JSON, codificación de IDs, reintentos, `errorDetail` |
 | `ICX_PriceSyncSchedulerTest`, `ICX_PriceSyncInvocableTest` | Programación y lanzamiento |
 | `ICX_CommerceSyncSettingsTest` | Validación de configuración incompleta |
@@ -123,7 +123,7 @@ Filtro de lectura: `Pricebook2.Name = <lista configurada>`, `IsActive = true`, `
 
 - **Por producto:** cualquier fallo (HTTP 4xx/5xx, excepción, timeout) se registra en `Commerce_Sync_Log__c` con operación, código HTTP, correlation-id y mensaje; el batch continúa con el siguiente.
 - **Reintentos:** 429 y 5xx y `CalloutException` se reintentan hasta el máximo configurado; 4xx no se reintenta porque es error de datos o permisos.
-- **Fatal:** si la configuración está incompleta o no se puede garantizar el price book, el job aborta y deja una fila SUMMARY con el motivo.
+- **Fatal:** si la configuración está incompleta o el price book no existe en Commerce, el job aborta y deja una fila SUMMARY con el motivo.
 - **Idempotencia como recuperación:** la siguiente ejecución repara lo que quedó pendiente, sin duplicar.
 - **Si Commerce no responde a mitad de la carga:** los productos ya procesados quedan con precio; los que fallaron quedan en el log como ERROR; al correr de nuevo se completan. En producción se agregarían alertas sobre el log, backoff exponencial, campo de última sincronización en `PricebookEntry` para procesar solo cambios, y Platform Event o email con el resumen.
 
@@ -133,7 +133,8 @@ Filtro de lectura: `Pricebook2.Name = <lista configurada>`, `IsActive = true`, `
 1. Importar "Storefront Reference Architecture Demo Sites" desde Site Import & Export, o crear a mano un sitio y un catálogo maestro.
 2. Identificar el ID del catálogo maestro y el ID del sitio.
 3. Confirmar que COP esté entre las monedas permitidas del sitio.
-4. Anotar catálogo y sitio en la Custom Metadata `Default`.
+4. Crear el price book `icx-cop-list-prices` en COP y asignarlo al sitio.
+5. Anotar catálogo, sitio y price book en la Custom Metadata `Default`.
 
 ### Fase B · Configurar el CRM
 5. Desplegar la metadata de `icx-integration`: Custom Metadata, objeto de log, External Credential, Named Credential, permission set y tab.
